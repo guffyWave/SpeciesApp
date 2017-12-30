@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">SpeciesApp</string>
+    <string name="server_uri">https://swapi.co/</string>
+</resources>
