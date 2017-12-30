@@ -79,6 +79,7 @@ class SpeciesListFragment : BaseFragment(), SpecieView {
     override fun removeWait() {
         progressBar.visibility = View.GONE
         swipeRefreshContainer.visibility = View.VISIBLE
+
     }
 
     override fun onFailure(failureMessage: String?) {
