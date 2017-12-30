@@ -17,6 +17,7 @@ import com.khurshid.gufran.speciesapp.view.SpecieView
 import kotlinx.android.synthetic.main.fragment_species_list.*
 
 
+
 /*
     Code Prepared by **Gufran Khurshid**.
     Sr. Android Developer.
@@ -30,10 +31,10 @@ import kotlinx.android.synthetic.main.fragment_species_list.*
 */
 class SpeciesListFragment : BaseFragment(), SpecieView {
 
-    lateinit var presenter: SpeciesPresenter;
-    lateinit var adapter: SpeciesListAdapter;
-    lateinit var speciesList: MutableList<Specie>;
-    private var currentPage = 1;
+    lateinit var presenter: SpeciesPresenter
+    lateinit var adapter: SpeciesListAdapter
+    lateinit var speciesList: MutableList<Specie>
+    private var currentPage = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,14 +44,14 @@ class SpeciesListFragment : BaseFragment(), SpecieView {
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         rootView = inflater?.inflate(R.layout.fragment_species_list,
                 container, false)
-        return rootView;
+        return rootView
     }
 
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val layoutManager = LinearLayoutManager(activity);
+        val layoutManager = LinearLayoutManager(activity)
         layoutManager.orientation = LinearLayoutManager.VERTICAL
         speciesRecyclerView.layoutManager = layoutManager
         speciesRecyclerView.setHasFixedSize(true)
@@ -61,7 +62,7 @@ class SpeciesListFragment : BaseFragment(), SpecieView {
 
         speciesRecyclerView.adapter = adapter
 
-        presenter = SpeciesPresenter(SpeciesDaoImpl(activity), this);
+        presenter = SpeciesPresenter(SpeciesDaoImpl(activity), this)
         presenter.getSpeciesList("1")
 
         swipeRefreshContainer.setOnRefreshListener(SwipeRefreshLayout.OnRefreshListener {
