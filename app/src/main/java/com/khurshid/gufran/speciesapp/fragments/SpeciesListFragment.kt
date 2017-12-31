@@ -3,6 +3,7 @@ package com.khurshid.gufran.speciesapp.fragments
 import android.os.Bundle
 import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.LinearLayoutManager
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -111,7 +112,6 @@ class SpeciesListFragment : BaseFragment(), SpecieView {
 
     override fun onFailure(failureMessage: String?) {
         Toast.makeText(activity, getString(R.string.message_data_failed), Toast.LENGTH_SHORT).show()
-        //Log.d(TAG,)
         swipeRefreshContainer.isRefreshing = false
         removeLoadAtBottom()
     }
