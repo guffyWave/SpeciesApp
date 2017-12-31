@@ -98,10 +98,10 @@ class SpeciesListFragment : BaseFragment(), SpecieView {
             progressBar.visibility = View.VISIBLE
             swipeRefreshContainer.visibility = View.GONE
         } else {
-            mSpeciesList.add(LoadingSpecieEntity());
-            mAdapter.notifyItemInserted(mSpeciesList.size - 1);
-            progressBar.visibility = View.GONE;
-            speciesRecyclerView.visibility = View.VISIBLE;
+            mSpeciesList.add(LoadingSpecieEntity())
+            mAdapter.notifyItemInserted(mSpeciesList.size - 1)
+            progressBar.visibility = View.GONE
+            speciesRecyclerView.visibility = View.VISIBLE
         }
     }
 
@@ -128,8 +128,8 @@ class SpeciesListFragment : BaseFragment(), SpecieView {
         }
 
 
-        if (serverResponse != null && serverResponse.species != null && serverResponse!!.species.size > 0) {
-            mSpeciesList.addAll(serverResponse!!.species)
+        if (serverResponse.species != null && serverResponse.species.size > 0) {
+            synchronized(mSpeciesList) { mSpeciesList.addAll(serverResponse.species) }
         } else {
             Toast.makeText(activity, getString(R.string.message_no_more_data), Toast.LENGTH_SHORT).show()
         }
@@ -138,9 +138,11 @@ class SpeciesListFragment : BaseFragment(), SpecieView {
     }
 
     private fun removeLoadAtBottom() {
-        if (mSpeciesList.size != 0 && (mSpeciesList.get(mSpeciesList.size - 1) is LoadingSpecieEntity)) {
-            mSpeciesList.removeAt(mSpeciesList.size - 1)
-            mAdapter.notifyDataSetChangedManually()
+        synchronized(mSpeciesList) {
+            if (mSpeciesList.size != 0 && (mSpeciesList.get(mSpeciesList.size - 1) is LoadingSpecieEntity)) {
+                mSpeciesList.removeAt(mSpeciesList.size - 1)
+                mAdapter.notifyDataSetChangedManually()
+            }
         }
     }
 

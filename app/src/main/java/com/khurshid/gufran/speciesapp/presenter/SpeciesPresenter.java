@@ -56,7 +56,7 @@ public class SpeciesPresenter {
     }
 
 
-    public void changeSpecieState(Specie specie) {
+    public synchronized void changeSpecieState(Specie specie) {
         if (specie.getSpecieStatus().equals(Specie.ACTIVE)) {
             specie.setSpecieStatus(Specie.EXTINCT);
         } else {
