@@ -7,12 +7,10 @@ package com.khurshid.gufran.speciesapp.adapter;
     Skype Id : gufran.khurshid
     Date: **30 December, 2017.**
 
-    Description: *Load more interface*
+    Description: *Fake entity to implement load more behavior*
      **
 
     All Rights Reserved.
 */
-
-public interface OnLoadMoreListener {
-    void onLoadMore();
+public class LoadingSpecieEntity {
 }

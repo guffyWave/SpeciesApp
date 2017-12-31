@@ -55,7 +55,7 @@ public class SpeciesAppRetrofit {
                     // converter sequence does matter , a lot !
                     .addConverterFactory(GsonConverterFactory.create())  //for request to json conversion
                     .addConverterFactory(ScalarsConverterFactory.create())//for response to string conversion
-                    .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                    .addCallAdapterFactory(RxJavaCallAdapterFactory.create())//for Rx Android
                     .build();
 
         }

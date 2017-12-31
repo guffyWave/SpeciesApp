@@ -2,7 +2,6 @@ package com.khurshid.gufran.speciesapp.dao;
 
 import android.content.Context;
 
-import com.khurshid.gufran.speciesapp.communication.retrofit.SpeciesAppAPI;
 import com.khurshid.gufran.speciesapp.communication.retrofit.SpeciesAppRetrofit;
 import com.khurshid.gufran.speciesapp.communication.retrofit.response.ServerResponse;
 import com.khurshid.gufran.speciesapp.exceptions.SpecieAppException;
@@ -14,20 +13,30 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
-/**
- * Created by gufran on 30/12/17.
- */
+/*
+    Code Prepared by **Gufran Khurshid**.
+    Sr. Android Developer.
+    Email Id : gufran.khurshid@gmail.com
+    Skype Id : gufran.khurshid
+    Date: **30 December, 2017.**
 
-public class SpeciesDaoImpl implements SpeciesDao{
+    Description: **DaoImpl instantiate the retrofit client
+      Rx makes requests on worker thread
+      and observes on main thread
+     **
 
-    Context context;
+    All Rights Reserved.
+*/
+public class SpeciesDaoImpl implements SpeciesDao {
 
-    public SpeciesDaoImpl(Context context) {
-        this.context = context;
+    Context mContext;
+
+    public SpeciesDaoImpl(Context mContext) {
+        this.mContext = mContext;
     }
 
-    public Subscription getSpeciesList(final String page, final GetSpeciesListCallback callback) {
-        return SpeciesAppRetrofit.getAPI(context).getSpecies(page)
+    public synchronized Subscription getSpeciesList(final String page, final GetSpeciesListCallback callback) {
+        return SpeciesAppRetrofit.getAPI(mContext).getSpecies(page)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .onErrorResumeNext(new Func1<Throwable, Observable<? extends ServerResponse>>() {
@@ -39,16 +48,17 @@ public class SpeciesDaoImpl implements SpeciesDao{
                 .subscribe(new Subscriber<ServerResponse>() {
                     @Override
                     public void onCompleted() {
-
                     }
 
                     @Override
                     public void onError(Throwable e) {
+                        //Crashlytics can be used to trace exceptions in different types of devices
                         callback.onError(new SpecieAppException("Some Error occured", e));
                     }
 
                     @Override
                     public void onNext(ServerResponse ServerResponse) {
+                        //the server response can be cached too using retrofit cache or diskLRU cache
                         callback.onSuccess(ServerResponse);
                     }
                 });

@@ -10,6 +10,21 @@ import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+/*
+    Code Prepared by **Gufran Khurshid**.
+    Sr Android Developer.
+    Email Id : gufran.khurshid@gmail.com
+    Skype Id : gufran.khurshid
+    Date: **30 December, 2017.**
+
+    Description: **Specie entity that represents server result .
+    It also contains ACTIVE and EXTINCT State
+    Enums are costly, hence @StringDef is used
+    **
+
+    All Rights Reserved.
+*/
+
 public class Specie {
 
 

@@ -15,23 +15,31 @@ import com.khurshid.gufran.speciesapp.management.SpeciesApp;
 
 import java.util.List;
 
-/**
- * Created by gufran on 30/12/17.
- */
+/*
+    Code Prepared by **Gufran Khurshid**.
+    Sr. Android Developer.
+    Email Id : gufran.khurshid@gmail.com
+    Skype Id : gufran.khurshid
+    Date: **30 December, 2017.**
 
+    Description: *Adapter converts objects list in viewable cards*
+     **
+
+    All Rights Reserved.
+*/
 public class SpeciesListAdapter extends RecyclerView.Adapter {
 
-    private final OnItemClickListener listener;
-    private List<Object> specieList;
+    private final OnItemClickListener mListener;
+    private List<Object> mSpecieList;
     private final int ITEM_VIEW_TYPE_SPECIE = 1;
     private final int ITEM_VIEW_TYPE_LOADING = 2;
     private OnLoadMoreListener mOnLoadMoreListener;
     private boolean isLoading = false;
 
 
-    public SpeciesListAdapter(List<Object> specieList, OnItemClickListener listener) {
-        this.specieList = specieList;
-        this.listener = listener;
+    public SpeciesListAdapter(List<Object> mSpecieList, OnItemClickListener mListener) {
+        this.mSpecieList = mSpecieList;
+        this.mListener = mListener;
     }
 
     @Override
@@ -53,12 +61,13 @@ public class SpeciesListAdapter extends RecyclerView.Adapter {
         }
         if (getItemViewType(position) == ITEM_VIEW_TYPE_SPECIE) {
             SpecieViewHolder specieViewHolder = (SpecieViewHolder) holder;
-            Specie specie = (Specie) specieList.get(position);
-            specieViewHolder.setClick(specie, position, listener);
+            Specie specie = (Specie) mSpecieList.get(position);
+            specieViewHolder.setClick(specie, position, mListener);
             specieViewHolder.specieNameTV.setText(specie.getName());
             specieViewHolder.classificationTV.setText(specie.getClassification());
             specieViewHolder.designationTV.setText(specie.getDesignation());
 
+            //TO-DO better way is to make a selector , selecting states based on Specie state
             if (specie.getSpecieStatus().equals(Specie.ACTIVE)) {
                 specieViewHolder.specieCardView.setBackgroundColor(Color.WHITE);
                 specieViewHolder.specieNameTV.setTextColor(SpeciesApp.getAppContext().getResources().getColor(R.color.colorPrimary));
@@ -76,10 +85,10 @@ public class SpeciesListAdapter extends RecyclerView.Adapter {
 
     @Override
     public int getItemCount() {
-        return specieList.size();
+        return mSpecieList.size();
     }
 
-    public void notifyDataSetChangedManually() {
+    public synchronized void notifyDataSetChangedManually() {
         super.notifyDataSetChanged();
         isLoading = false;
     }
@@ -87,7 +96,7 @@ public class SpeciesListAdapter extends RecyclerView.Adapter {
 
     @Override
     public int getItemViewType(int position) {
-        if (specieList.get(position) instanceof LoadSpecieEntity) {
+        if (mSpecieList.get(position) instanceof LoadingSpecieEntity) {
             return ITEM_VIEW_TYPE_LOADING;
         } else
             return ITEM_VIEW_TYPE_SPECIE;
@@ -104,10 +113,10 @@ public class SpeciesListAdapter extends RecyclerView.Adapter {
 
         public SpecieViewHolder(View itemView) {
             super(itemView);
-            specieCardView = (CardView) itemView.findViewById(R.id.specieCardView);
-            specieNameTV = (TextView) itemView.findViewById(R.id.specieNameTV);
-            classificationTV = (TextView) itemView.findViewById(R.id.classificationTV);
-            designationTV = (TextView) itemView.findViewById(R.id.designationTV);
+            specieCardView = itemView.findViewById(R.id.specieCardView);
+            specieNameTV = itemView.findViewById(R.id.specieNameTV);
+            classificationTV = itemView.findViewById(R.id.classificationTV);
+            designationTV = itemView.findViewById(R.id.designationTV);
         }
 
 
@@ -126,7 +135,7 @@ public class SpeciesListAdapter extends RecyclerView.Adapter {
 
         public LoadingViewHolder(View itemView) {
             super(itemView);
-            progressBar = (ProgressBar) itemView.findViewById(R.id.progressBar);
+            progressBar = itemView.findViewById(R.id.progressBar);
         }
     }
 

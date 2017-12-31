@@ -2,9 +2,19 @@
 package com.khurshid.gufran.speciesapp.communication.retrofit.response;
 
 import java.util.List;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.khurshid.gufran.speciesapp.entity.Specie;
+
+/*
+
+
+    Description: **Generated using json t pojo converter
+     Represents server data**
+
+    All Rights Reserved.
+*/
 
 public class ServerResponse {
 

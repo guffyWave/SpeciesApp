@@ -3,47 +3,64 @@ package com.khurshid.gufran.speciesapp.presenter;
 import com.khurshid.gufran.speciesapp.communication.retrofit.response.ServerResponse;
 import com.khurshid.gufran.speciesapp.dao.SpeciesDao;
 import com.khurshid.gufran.speciesapp.dao.SpeciesDaoImpl;
+import com.khurshid.gufran.speciesapp.entity.Specie;
 import com.khurshid.gufran.speciesapp.exceptions.SpecieAppException;
 import com.khurshid.gufran.speciesapp.view.SpecieView;
 
 import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
 
-/**
- * Created by gufran on 30/12/17.
- */
+/*
+    Code Prepared by **Gufran Khurshid**.
+    Sr. Android Developer.
+    Email Id : gufran.khurshid@gmail.com
+    Skype Id : gufran.khurshid
+    Date: **30 December, 2017.**
 
+    Description: **Presenter that bind the data from server with View**
+
+    All Rights Reserved.
+*/
 public class SpeciesPresenter {
-    private final SpeciesDao dao;
-    private final SpecieView view;
-    private CompositeSubscription subscriptions;
+    private final SpeciesDao mDao;
+    private final SpecieView mView;
+    private CompositeSubscription mSubscriptions;
 
 
-    public SpeciesPresenter(SpeciesDao dao, SpecieView view) {
-        this.dao = dao;
-        this.view = view;
-        this.subscriptions = new CompositeSubscription();
+    public SpeciesPresenter(SpeciesDao mDao, SpecieView mView) {
+        this.mDao = mDao;
+        this.mView = mView;
+        this.mSubscriptions = new CompositeSubscription();
     }
 
     public void getSpeciesList(String page) {
-        view.showWait();
-        Subscription subscription = dao.getSpeciesList(page, new SpeciesDaoImpl.GetSpeciesListCallback() {
+        mView.showWait();
+        Subscription subscription = mDao.getSpeciesList(page, new SpeciesDaoImpl.GetSpeciesListCallback() {
             @Override
             public void onSuccess(ServerResponse serverResponse) {
-                view.removeWait();
-                view.getSpeciesList(serverResponse);
+                mView.removeWait();
+                mView.getSpeciesList(serverResponse);
             }
 
             @Override
             public void onError(SpecieAppException exception) {
-                view.removeWait();
-                view.onFailure(exception.getMessage());
+                mView.removeWait();
+                mView.onFailure(exception.getMessage());
             }
         });
-        subscriptions.add(subscription);
+        mSubscriptions.add(subscription);
     }
 
     public void onStop() {
-        subscriptions.unsubscribe();
+        mSubscriptions.unsubscribe();
+    }
+
+
+    public void changeSpecieState(Specie specie) {
+        if (specie.getSpecieStatus().equals(Specie.ACTIVE)) {
+            specie.setSpecieStatus(Specie.EXTINCT);
+        } else {
+            specie.setSpecieStatus(Specie.ACTIVE);
+        }
     }
 }

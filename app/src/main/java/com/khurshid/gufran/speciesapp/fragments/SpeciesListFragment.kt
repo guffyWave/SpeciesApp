@@ -8,13 +8,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import com.khurshid.gufran.speciesapp.R
-import com.khurshid.gufran.speciesapp.adapter.LoadSpecieEntity
+import com.khurshid.gufran.speciesapp.adapter.LoadingSpecieEntity
 import com.khurshid.gufran.speciesapp.adapter.SpeciesListAdapter
 import com.khurshid.gufran.speciesapp.communication.retrofit.response.ServerResponse
 import com.khurshid.gufran.speciesapp.dao.SpeciesDaoImpl
 import com.khurshid.gufran.speciesapp.entity.Specie
 import com.khurshid.gufran.speciesapp.presenter.SpeciesPresenter
-import com.khurshid.gufran.speciesapp.util.DummyUtil
+import com.khurshid.gufran.speciesapp.util.ConverterUtil
 import com.khurshid.gufran.speciesapp.view.SpecieView
 import kotlinx.android.synthetic.main.fragment_species_list.*
 
@@ -26,20 +26,21 @@ import kotlinx.android.synthetic.main.fragment_species_list.*
     Skype Id : gufran.khurshid
     Date: **30 December, 2017.**
 
-    Description: **BaseFragment is used to initialize common variables and call common methods**
+    Description: **The main fragment that will show the species list**
 
     All Rights Reserved.
 */
 class SpeciesListFragment : BaseFragment(), SpecieView {
 
-    lateinit var presenter: SpeciesPresenter
-    lateinit var adapter: SpeciesListAdapter
-    lateinit var speciesList: MutableList<Any>
-    private var nextPageCount: String? = "1"
+    private lateinit var mPresenter: SpeciesPresenter
+    private lateinit var mAdapter: SpeciesListAdapter
+    private lateinit var mSpeciesList: MutableList<Any>
+    private var mNextPageCount: String? = "1"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        speciesList = mutableListOf()
+        mSpeciesList = mutableListOf()
+        retainInstance = true // this will make sure fragment will not get recreated on device configuration changes e.g. screen rotation , etc
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -57,26 +58,22 @@ class SpeciesListFragment : BaseFragment(), SpecieView {
         speciesRecyclerView.layoutManager = layoutManager
         speciesRecyclerView.setHasFixedSize(true)
 
-        adapter = SpeciesListAdapter(speciesList, SpeciesListAdapter.OnItemClickListener { specie, position ->
-            specie.specieStatus = if (specie.specieStatus == Specie.ACTIVE) {
-                Specie.EXTINCT
-            } else {
-                Specie.ACTIVE
-            }
-            adapter.notifyItemChanged(position)
+        mAdapter = SpeciesListAdapter(mSpeciesList, SpeciesListAdapter.OnItemClickListener { specie, position ->
+            toggleSpecieState(specie)
+            mAdapter.notifyItemChanged(position)
         })
 
-        speciesRecyclerView.adapter = adapter
+        speciesRecyclerView.adapter = mAdapter
 
-        presenter = SpeciesPresenter(SpeciesDaoImpl(activity), this)
-        presenter.getSpeciesList(nextPageCount)
+        mPresenter = SpeciesPresenter(SpeciesDaoImpl(activity), this)
+        mPresenter.getSpeciesList(mNextPageCount)
 
 
-        adapter.setOnLoadMoreListener()
+        mAdapter.setOnLoadMoreListener()
         {
             speciesRecyclerView.post(Runnable {
-                if (nextPageCount != null)
-                    presenter.getSpeciesList(nextPageCount)
+                if (mNextPageCount != null)
+                    mPresenter.getSpeciesList(mNextPageCount)
                 else
                     Toast.makeText(activity, getString(R.string.message_no_more_data), Toast.LENGTH_SHORT).show()
             })
@@ -84,22 +81,26 @@ class SpeciesListFragment : BaseFragment(), SpecieView {
 
         swipeRefreshContainer.setOnRefreshListener(SwipeRefreshLayout.OnRefreshListener
         {
-            speciesList.clear()
-            nextPageCount = "1"
-            presenter.getSpeciesList(nextPageCount)
+            mSpeciesList.clear()
+            mNextPageCount = "1"
+            mPresenter.getSpeciesList(mNextPageCount)
         })
+    }
+
+    override fun toggleSpecieState(specie: Specie) {
+        mPresenter.changeSpecieState(specie)
     }
 
 
     override fun showWait() {
-        if (speciesList.size == 0) {
+        if (mSpeciesList.size == 0) {
             progressBar.visibility = View.VISIBLE
             swipeRefreshContainer.visibility = View.GONE
         } else {
-            speciesList.add(LoadSpecieEntity());
-            adapter.notifyItemInserted(speciesList.size - 1);
-            progressBar.setVisibility(View.GONE);
-            speciesRecyclerView.setVisibility(View.VISIBLE);
+            mSpeciesList.add(LoadingSpecieEntity());
+            mAdapter.notifyItemInserted(mSpeciesList.size - 1);
+            progressBar.visibility = View.GONE;
+            speciesRecyclerView.visibility = View.VISIBLE;
         }
     }
 
@@ -110,6 +111,7 @@ class SpeciesListFragment : BaseFragment(), SpecieView {
 
     override fun onFailure(failureMessage: String?) {
         Toast.makeText(activity, getString(R.string.message_data_failed), Toast.LENGTH_SHORT).show()
+        //Log.d(TAG,)
         swipeRefreshContainer.isRefreshing = false
         removeLoadAtBottom()
     }
@@ -120,31 +122,31 @@ class SpeciesListFragment : BaseFragment(), SpecieView {
         removeLoadAtBottom()
 
         if (!serverResponse!!.next.isNullOrBlank()) {
-            nextPageCount = DummyUtil.getNextPageNumber(serverResponse!!.next)
+            mNextPageCount = ConverterUtil.getNextPageNumber(serverResponse!!.next)
         } else {
-            nextPageCount = null
+            mNextPageCount = null
         }
 
 
         if (serverResponse != null && serverResponse.species != null && serverResponse!!.species.size > 0) {
-            speciesList.addAll(serverResponse!!.species)
+            mSpeciesList.addAll(serverResponse!!.species)
         } else {
             Toast.makeText(activity, getString(R.string.message_no_more_data), Toast.LENGTH_SHORT).show()
         }
 
-        adapter.notifyDataSetChangedManually()
+        mAdapter.notifyDataSetChangedManually()
     }
 
     private fun removeLoadAtBottom() {
-        if (speciesList.size != 0 && (speciesList.get(speciesList.size - 1) is LoadSpecieEntity)) {
-            speciesList.removeAt(speciesList.size - 1)
-            adapter.notifyDataSetChangedManually()
+        if (mSpeciesList.size != 0 && (mSpeciesList.get(mSpeciesList.size - 1) is LoadingSpecieEntity)) {
+            mSpeciesList.removeAt(mSpeciesList.size - 1)
+            mAdapter.notifyDataSetChangedManually()
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        presenter.onStop()
+        mPresenter.onStop()
     }
 
 }
