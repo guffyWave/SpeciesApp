@@ -12,6 +12,7 @@ import com.khurshid.gufran.speciesapp.adapter.LoadSpecieEntity
 import com.khurshid.gufran.speciesapp.adapter.SpeciesListAdapter
 import com.khurshid.gufran.speciesapp.communication.retrofit.response.ServerResponse
 import com.khurshid.gufran.speciesapp.dao.SpeciesDaoImpl
+import com.khurshid.gufran.speciesapp.entity.Specie
 import com.khurshid.gufran.speciesapp.presenter.SpeciesPresenter
 import com.khurshid.gufran.speciesapp.util.DummyUtil
 import com.khurshid.gufran.speciesapp.view.SpecieView
@@ -56,8 +57,13 @@ class SpeciesListFragment : BaseFragment(), SpecieView {
         speciesRecyclerView.layoutManager = layoutManager
         speciesRecyclerView.setHasFixedSize(true)
 
-        adapter = SpeciesListAdapter(speciesList, SpeciesListAdapter.OnItemClickListener { specie ->
-            Toast.makeText(activity, specie.name + " clicked !", Toast.LENGTH_LONG).show()
+        adapter = SpeciesListAdapter(speciesList, SpeciesListAdapter.OnItemClickListener { specie, position ->
+            specie.specieStatus = if (specie.specieStatus == Specie.ACTIVE) {
+                Specie.EXTINCT
+            } else {
+                Specie.ACTIVE
+            }
+            adapter.notifyItemChanged(position)
         })
 
         speciesRecyclerView.adapter = adapter
@@ -66,16 +72,18 @@ class SpeciesListFragment : BaseFragment(), SpecieView {
         presenter.getSpeciesList(nextPageCount)
 
 
-        adapter.setOnLoadMoreListener {
+        adapter.setOnLoadMoreListener()
+        {
             speciesRecyclerView.post(Runnable {
                 if (nextPageCount != null)
                     presenter.getSpeciesList(nextPageCount)
                 else
-                    Toast.makeText(activity, "No more data to show !", Toast.LENGTH_LONG).show()
+                    Toast.makeText(activity, "No more data to show !", Toast.LENGTH_SHORT).show()
             })
         }
 
-        swipeRefreshContainer.setOnRefreshListener(SwipeRefreshLayout.OnRefreshListener {
+        swipeRefreshContainer.setOnRefreshListener(SwipeRefreshLayout.OnRefreshListener
+        {
             speciesList.clear()
             nextPageCount = "1"
             presenter.getSpeciesList(nextPageCount)
@@ -101,7 +109,7 @@ class SpeciesListFragment : BaseFragment(), SpecieView {
     }
 
     override fun onFailure(failureMessage: String?) {
-        Toast.makeText(activity, "Failed to load data !", Toast.LENGTH_LONG).show()
+        Toast.makeText(activity, "Failed to load data !", Toast.LENGTH_SHORT).show()
         swipeRefreshContainer.isRefreshing = false
         removeLoadAtBottom()
     }
@@ -121,7 +129,7 @@ class SpeciesListFragment : BaseFragment(), SpecieView {
         if (serverResponse != null && serverResponse.species != null && serverResponse!!.species.size > 0) {
             speciesList.addAll(serverResponse!!.species)
         } else {
-            Toast.makeText(activity, "No more data to show !", Toast.LENGTH_LONG).show()
+            Toast.makeText(activity, "No more data to show !", Toast.LENGTH_SHORT).show()
         }
 
         adapter.notifyDataSetChangedManually()

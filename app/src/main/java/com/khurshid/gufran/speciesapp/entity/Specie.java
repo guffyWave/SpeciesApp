@@ -1,11 +1,26 @@
 
 package com.khurshid.gufran.speciesapp.entity;
 
+import android.support.annotation.StringDef;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.List;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 public class Specie {
+
+
+    public static final String ACTIVE = "ACTIVE";
+    public static final String EXTINCT = "EXTINCT";
+
+
+    @StringDef({ACTIVE, EXTINCT})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface SpecieStatus {
+    }
 
     @SerializedName("name")
     @Expose
@@ -52,6 +67,9 @@ public class Specie {
     @SerializedName("url")
     @Expose
     private String url;
+    @SpecieStatus
+    private String specieStatus = EXTINCT;
+
 
     public String getName() {
         return name;
@@ -172,5 +190,15 @@ public class Specie {
     public void setUrl(String url) {
         this.url = url;
     }
+
+
+    public String getSpecieStatus() {
+        return specieStatus;
+    }
+
+    public void setSpecieStatus(String specieStatus) {
+        this.specieStatus = specieStatus;
+    }
+
 
 }
