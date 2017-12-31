@@ -78,7 +78,7 @@ class SpeciesListFragment : BaseFragment(), SpecieView {
                 if (nextPageCount != null)
                     presenter.getSpeciesList(nextPageCount)
                 else
-                    Toast.makeText(activity, "No more data to show !", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(activity, getString(R.string.message_no_more_data), Toast.LENGTH_SHORT).show()
             })
         }
 
@@ -109,7 +109,7 @@ class SpeciesListFragment : BaseFragment(), SpecieView {
     }
 
     override fun onFailure(failureMessage: String?) {
-        Toast.makeText(activity, "Failed to load data !", Toast.LENGTH_SHORT).show()
+        Toast.makeText(activity, getString(R.string.message_data_failed), Toast.LENGTH_SHORT).show()
         swipeRefreshContainer.isRefreshing = false
         removeLoadAtBottom()
     }
@@ -129,7 +129,7 @@ class SpeciesListFragment : BaseFragment(), SpecieView {
         if (serverResponse != null && serverResponse.species != null && serverResponse!!.species.size > 0) {
             speciesList.addAll(serverResponse!!.species)
         } else {
-            Toast.makeText(activity, "No more data to show !", Toast.LENGTH_SHORT).show()
+            Toast.makeText(activity, getString(R.string.message_no_more_data), Toast.LENGTH_SHORT).show()
         }
 
         adapter.notifyDataSetChangedManually()

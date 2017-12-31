@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">SpeciesApp</string>
     <string name="server_uri">https://swapi.co/</string>
+
+    <!--Messages-->
+    <string name="message_no_more_data">No more data to show !</string>
+    <string name="message_data_failed">Failed to load data !</string>
 </resources>
